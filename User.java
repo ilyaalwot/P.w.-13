@@ -1,10 +1,15 @@
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private UserIdentifier identifier;
     private String password;
     private LocalDateTime lastLoginDate;
-    private boolean isLoggedIn;
+
+    // Не зберігаємо стан логування в системі
+    private transient boolean isLoggedIn;
 
     public User(UserIdentifier identifier, String password) {
         this.identifier = identifier;
