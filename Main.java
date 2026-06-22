@@ -3,8 +3,17 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        UserRegistry registry = new UserRegistry();
         Scanner scanner = new Scanner(System.in);
+        UserRegistry registry = new UserRegistry();
+
+        System.out.print("Чи потрібно відновити базу користувачів з файлу? (так/ні): ");
+        String restoreChoice = scanner.nextLine();
+
+        if (restoreChoice.equalsIgnoreCase("так")) {
+            System.out.print("Введіть шлях до файлу: ");
+            String fileName = scanner.nextLine();
+            registry.loadFromFile(fileName);
+        }
 
         while (true) {
             System.out.println("\n=== МЕНЮ ===");
@@ -15,14 +24,15 @@ public class Main {
             System.out.println("5. Видалити користувача");
             System.out.println("6. Показати кількість користувачів");
             System.out.println("7. Показати всіх користувачів");
-            System.out.println("8. Отримати список користувачів (LinkedList)");
+            System.out.println("8. Показати список користувачів");
             System.out.println("9. Показати користувачів у відсортованому порядку");
             System.out.println("10. Показати тільки авторизованих користувачів");
+            System.out.println("11. Зберегти користувачів у файл");
+            System.out.println("12. Відновити користувачів з файлу");
             System.out.println("0. Вийти");
             System.out.print("Ваш вибір: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = Integer.parseInt(scanner.nextLine());
 
             switch (choice) {
                 case 1:
@@ -43,8 +53,7 @@ public class Main {
 
                 case 3:
                     System.out.print("Введіть id користувача: ");
-                    int logoutId = scanner.nextInt();
-                    scanner.nextLine();
+                    int logoutId = Integer.parseInt(scanner.nextLine());
                     registry.logoutUser(logoutId);
                     break;
 
@@ -60,8 +69,7 @@ public class Main {
 
                 case 5:
                     System.out.print("Введіть id користувача для видалення: ");
-                    int removeId = scanner.nextInt();
-                    scanner.nextLine();
+                    int removeId = Integer.parseInt(scanner.nextLine());
                     registry.removeUser(removeId);
                     break;
 
@@ -106,7 +114,28 @@ public class Main {
                     }
                     break;
 
+                case 11:
+                    System.out.print("Введіть ім'я файлу для збереження: ");
+                    String saveFile = scanner.nextLine();
+                    registry.saveToFile(saveFile);
+                    break;
+
+                case 12:
+                    System.out.print("Введіть шлях до файлу для відновлення: ");
+                    String loadFile = scanner.nextLine();
+                    registry.loadFromFile(loadFile);
+                    break;
+
                 case 0:
+                    System.out.print("Бажаєте зберегти користувачів перед виходом? (так/ні): ");
+                    String saveBeforeExit = scanner.nextLine();
+
+                    if (saveBeforeExit.equalsIgnoreCase("так")) {
+                        System.out.print("Введіть ім'я файлу для збереження: ");
+                        String fileName = scanner.nextLine();
+                        registry.saveToFile(fileName);
+                    }
+
                     System.out.println("Завершення програми...");
                     scanner.close();
                     return;
