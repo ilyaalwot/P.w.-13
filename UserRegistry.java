@@ -1,3 +1,7 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -103,19 +107,16 @@ public class UserRegistry {
         }
     }
 
-    // Повертає всіх користувачів у вигляді LinkedList
     public LinkedList<User> getUserList() {
         return new LinkedList<>(users.values());
     }
 
-    // Повертає список користувачів у заданому порядку
     public LinkedList<User> getInOrder(Comparator<User> comparator) {
         LinkedList<User> list = getUserList();
         list.sort(comparator);
         return list;
     }
 
-    // Повертає відфільтрований список користувачів
     public LinkedList<User> getFiltered(Predicate<User> predicate) {
         LinkedList<User> filtered = new LinkedList<>();
 
@@ -126,5 +127,47 @@ public class UserRegistry {
         }
 
         return filtered;
+    }
+
+    // Збереження користувачів у файл
+    public void saveToFile(String fileName) {
+        try (ObjectOutputStream outputStream =
+                     new ObjectOutputStream(new FileOutputStream(fileName))) {
+
+            outputStream.writeObject(users);
+            System.out.println("Користувачів успішно збережено у файл: " + fileName);
+
+        } catch (Exception e) {
+            System.out.println("Помилка під час збереження: " + e.getMessage());
+        }
+    }
+
+    // Відновлення користувачів з файлу
+    @SuppressWarnings("unchecked")
+    public void loadFromFile(String fileName) {
+        try (ObjectInputStream inputStream =
+                     new ObjectInputStream(new FileInputStream(fileName))) {
+
+            users = (HashMap<UserIdentifier, User>) inputStream.readObject();
+
+            // Оновлюємо nextId після завантаження
+            int maxId = 0;
+            for (UserIdentifier identifier : users.keySet()) {
+                if (identifier.getId() > maxId) {
+                    maxId = identifier.getId();
+                }
+            }
+            nextId = maxId + 1;
+
+            // Після відновлення всі користувачі повинні бути не залогінені
+            for (User user : users.values()) {
+                user.setLoggedIn(false);
+            }
+
+            System.out.println("Користувачів успішно відновлено з файлу: " + fileName);
+
+        } catch (Exception e) {
+            System.out.println("Помилка під час відновлення: " + e.getMessage());
+        }
     }
 }
